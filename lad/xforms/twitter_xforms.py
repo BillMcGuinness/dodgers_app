@@ -131,6 +131,8 @@ def get_user_df(search_res):
 
         user_df = pd.concat([user_df, user_row], ignore_index=True)
 
+    user_df.drop_duplicates(subset='id', inplace=False)
+
     return user_df
 
 def get_search_df(search_res):
@@ -150,7 +152,7 @@ def get_search_df(search_res):
         'next_results': [search_metadata.get('next_results')]
     })
 
-    search_df = create_df_id(search_df, out_col='search_id')
+    search_df = create_df_id(search_df, out_col='id')
 
     return search_df
 
