@@ -69,11 +69,37 @@ class df_utils_test(unittest.TestCase):
             'col1': [1,2,3,4,5,6,7],
             'col2': ['abc','def','xyz','hij','lmn','qrs', 'tuv'],
             'col2_xxx': ['abc','def','xyz','hij','lmn','qrs', 'tuv'],
+            'newcol_pat': ['aaa','bbb','ccc','ddd','eee','fff','ggg']
         })
         inp_df.set_index('idx', inplace=True)
 
         inp_comp_df = inp_df.assign(**{
             'col2': ['abc','def','xyz','hij','lmn','xxx', None],
+            'col2_xxx': ['abc', 'def', 'xyz', 'hij', 'lmn', 'xxx', None],
+            'newcol_pat': ['xxx', 'yyy', 'zzz', 'rrr', 'www', 'ttt', 'fff']
+        })
+
+        exp_df = inp_df.assign(**{
+            'is_diff': [False, False, False, False, False, False, False]
+        })
+
+        got_df = df_utils.diff_rows(
+            inp_df, inp_comp_df, out_col='is_diff',
+            exclude_col_patterns=['col2','newcol']
+        )
+        pd.testing.assert_frame_equal(exp_df, got_df)
+
+    def test_diff_rows_exclude_col(self):
+        inp_df = pd.DataFrame(data={
+            'idx': ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            'col1': [1, 2, 3, 4, 5, 6, 7],
+            'col2': ['abc', 'def', 'xyz', 'hij', 'lmn', 'qrs', 'tuv'],
+            'col2_xxx': ['abc', 'def', 'xyz', 'hij', 'lmn', 'qrs', 'tuv'],
+        })
+        inp_df.set_index('idx', inplace=True)
+
+        inp_comp_df = inp_df.assign(**{
+            'col2': ['abc', 'def', 'xyz', 'hij', 'lmn', 'xxx', None],
             'col2_xxx': ['abc', 'def', 'xyz', 'hij', 'lmn', 'xxx', None]
         })
 
@@ -82,7 +108,8 @@ class df_utils_test(unittest.TestCase):
         })
 
         got_df = df_utils.diff_rows(
-            inp_df, inp_comp_df, out_col='is_diff', exclude_col_pattern='col2'
+            inp_df, inp_comp_df, out_col='is_diff',
+            exclude_col_patterns=['col2']
         )
         pd.testing.assert_frame_equal(exp_df, got_df)
 

@@ -13,16 +13,17 @@ def create_row_id(df_row, out_col):
 def create_df_id(df, out_col):
     return df.apply(partial(create_row_id, out_col=out_col), axis=1)
 
-def diff_rows(df, compare_df, out_col, exclude_col_pattern=None):
+def diff_rows(df, compare_df, out_col, exclude_col_patterns=None):
     df[out_col] = None
 
     overlapping_cols = set(df.columns).intersection(set(compare_df.columns))
 
-    if exclude_col_pattern:
-        overlapping_cols = [
-            col for col in overlapping_cols
-            if not re.search(exclude_col_pattern, col)
-        ]
+    if exclude_col_patterns:
+        for exclude_col_pattern in exclude_col_patterns:
+            overlapping_cols = [
+                col for col in overlapping_cols
+                if not re.search(exclude_col_pattern, col)
+            ]
 
     def _diff_row(row):
         row_idx = row.name

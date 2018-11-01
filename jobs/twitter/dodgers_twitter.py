@@ -26,6 +26,8 @@ def run_job():
         if k == 'user_mention_df':
             update_if_diff = False
 
+
+
         process_df(df, _DEST_TABLE_MAP.get('k'), update_if_diff)
 
 
