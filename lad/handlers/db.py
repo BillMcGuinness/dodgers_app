@@ -42,7 +42,7 @@ class DbHandler(object):
             self._conn.close()
             self._conn = None
 
-    def sql_to_df(self, query):
+    def sql_to_df(self, query, index_col=None):
         query = query.strip()
         query = query.replace("\n", " ")
         query = query.replace("\r", " ")
@@ -50,7 +50,10 @@ class DbHandler(object):
             con = self.connect()
         else:
             con = self._conn
-        return pd.read_sql(query, con)
+        out_df = pd.read_sql(query, con)
+        if index_col:
+            out_df.set_index(index_col, inplace=True)
+        return out_df
 
     def df_to_table(self, df, table, schema, append=True):
         con = self.connect()

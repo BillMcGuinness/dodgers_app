@@ -60,8 +60,9 @@ def get_tweet_df(search_res, search_id):
 
         tweet_df = pd.concat([tweet_df, tweet_row], ignore_index=True)
 
-    return tweet_df
+    tweet_df.set_index('id', inplace=True)
 
+    return tweet_df
 
 def get_user_df(search_res):
     tweets = search_res['statuses']
@@ -133,6 +134,8 @@ def get_user_df(search_res):
 
     user_df.drop_duplicates(subset='id', inplace=False)
 
+    user_df.set_index('id', inplace=True)
+
     return user_df
 
 def get_search_df(search_res):
@@ -153,6 +156,8 @@ def get_search_df(search_res):
     })
 
     search_df = create_df_id(search_df, out_col='id')
+
+    search_df.set_index('id', inplace=True)
 
     return search_df
 
@@ -176,6 +181,8 @@ def get_user_mentions_user_df(search_res):
 
     user_df.drop_duplicates(subset='id', inplace=True)
 
+    user_df.set_index('id', inplace=True)
+
     return user_df
 
 def get_tweet_user_mention_df(search_res):
@@ -198,8 +205,10 @@ def get_tweet_user_mention_df(search_res):
                 )
 
     tweet_user_mention_df = create_df_id(
-        tweet_user_mention_df, 'tweet_user_mention_id'
+        tweet_user_mention_df, 'id'
     )
+
+    tweet_user_mention_df.set_index('id', inplace=True)
 
     return tweet_user_mention_df
 
@@ -265,6 +274,8 @@ def get_media_df(search_res):
 
     media_df.drop_duplicates(subset='id', inplace=True)
 
+    media_df.set_index('id', inplace=True)
+
     return media_df
 
 def get_tweet_media_df(search_res):
@@ -287,8 +298,10 @@ def get_tweet_media_df(search_res):
                 )
 
     tweet_media_df = create_df_id(
-        tweet_media_df, 'tweet_media_id'
+        tweet_media_df, 'id'
     )
+
+    tweet_media_df.set_index('id', inplace=True)
 
     return tweet_media_df
 
@@ -317,6 +330,8 @@ def get_places_df(search_res):
 
     place_df.drop_duplicates(subset='id', inplace=True)
 
+    place_df.set_index('id', inplace=True)
+
     return place_df
 
 def get_places_coordinates_df(search_res):
@@ -340,8 +355,10 @@ def get_places_coordinates_df(search_res):
                     )
 
     place_geo_df = create_df_id(
-        place_geo_df, 'place_coordinate_id'
+        place_geo_df, 'id'
     )
-    place_geo_df.drop_duplicates(subset='place_coordinate_id', inplace=True)
+    place_geo_df.drop_duplicates(subset='=id', inplace=True)
+
+    place_geo_df.set_index('id', inplace=True)
 
     return place_geo_df

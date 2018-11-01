@@ -10,3 +10,6 @@ def create_row_id(df_row, out_col):
 
 def create_df_id(df, out_col):
     return df.apply(partial(create_row_id, out_col=out_col), axis=1)
+
+def diff_rows(df_1, df_2, out_col):
+    pass
