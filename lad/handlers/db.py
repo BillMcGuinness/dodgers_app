@@ -107,3 +107,76 @@ class DbHandler(object):
             curs.commit()
 
         curs.close()
+
+    def delete(self, table, schema, table_cols=None, delete_conds=None):
+        # table_cols are the table columns you want to use to determine which
+        #  rows to delete--must be list of strings
+        # delete_conds are the values you want to use to determine which rows
+        #  to delete--must be list of tuples, each tuple being same length as
+        #  table_cols
+        con = self.connect()
+
+        if self.driver == 'SQL Server':
+            # different ways of determining if a table already exists for
+            # different drivers
+            table_exists_df = self.sql_to_df(
+                query="""
+                    SELECT *
+                    FROM INFORMATION_SCHEMA.TABLES
+                    WHERE TABLE_SCHEMA = '{0}'
+                        AND TABLE_NAME = '{1}'
+                """.format(schema, table)
+            )
+            if not table_exists_df.empty:
+                table_exists = True
+            else:
+                table_exists = False
+
+        if not table_exists:
+            #raising exception for this exercise
+            #if I were building this functionality out I would try to infer
+            # data types from the input df and create the table here
+            raise Exception('table {0}.{1} does not exist'.format(
+                schema, table
+            ))
+
+        delete_sql_statement = 'DELETE FROM {0}.{1}'.format(schema, table)
+
+        if table_cols:
+            if not delete_conds:
+                raise Exception('if table_cols is provided, delete_conds must also be provided')
+
+            delete_cond_length_check = [
+                len(tup)==len(table_cols) for tup in delete_conds
+            ]
+            if not all(delete_cond_length_check):
+                raise Exception('every delete cond tuple is not the same '
+                                'length as table_cols')
+
+            delete_sql_statement += ' WHERE '
+
+            num_or_conds = len(delete_conds)
+            for or_idx, or_delete_cond in enumerate(delete_conds):
+                num_and_conds = len(or_delete_cond)
+                delete_sql_statement += '('
+                for and_idx, and_cond in enumerate(or_delete_cond):
+                    if isinstance(and_cond, str):
+                        delete_sql_statement += "{0} = '{1}'".format(
+                            table_cols[and_idx], and_cond
+                        )
+                    else:
+                        delete_sql_statement += "{0} = {1}".format(
+                            table_cols[and_idx], str(and_cond)
+                        )
+                    if and_idx + 1 < num_and_conds:
+                        delete_sql_statement += ' AND '
+                    else:
+                        delete_sql_statement += ')'
+                if or_idx+1 < num_or_conds:
+                    delete_sql_statement += ' OR '
+
+        curs = con.cursor()
+        curs.execute(delete_sql_statement)
+        curs.commit()
+        curs.close()
+

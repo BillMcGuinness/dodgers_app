@@ -46,7 +46,26 @@ def process_df(df, dest_table, update_if_diff):
         )
 
         if update_if_diff:
-            diff_df = lad.diff_rows(df, existing_data_df, out_col='is_diff')
+            out_col = 'is_diff'
+            diff_flag_df = lad.diff_rows(
+                df, existing_data_df, out_col=out_col,
+                exclude_col_pattern='created'
+            )
+            diff_df = diff_flag_df[
+                (~diff_flag_df[out_col]) & (diff_flag_df[out_col].notnull())
+            ]
+            #todo update diff_df with cols we don't want to overwrite
+            ids_to_delete = [tuple(i) for i in diff_df.index]
+            db.delete(
+                table=dest_table.split('.')[1],
+                schema=dest_table.split('.')[0], table_cols=['id'],
+                delete_conds=ids_to_delete
+            )
+
+            db.df_to_table(
+                diff_df, table=dest_table.split('.')[1],
+                schema=dest_table.split('.')[0], append=True
+            )
 
 
 
