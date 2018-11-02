@@ -110,6 +110,7 @@ def run_job():
         # back in the past
         search_df = df_map['search_df']
         next_results = search_df['next_results'].iloc[0]
+        # hard coding this...will break if next_results format changes
         next_results_substr_start = next_results.find('max_id=') + 7
         next_results_substr_end = next_results.find('&q=')
         max_id = next_results[
@@ -128,7 +129,7 @@ def process_df(df, dest_table, update_if_diff, audit_table=None):
             """.format(dest_table),
             index_col='id'
         )
-
+        #insert new rows to table and audit table
         new_rows_df = df[~df.index.isin(existing_data_df.index)]
         new_rows_df.reset_index(inplace=True)
         db.df_to_table(
@@ -144,10 +145,12 @@ def process_df(df, dest_table, update_if_diff, audit_table=None):
 
         if update_if_diff:
             out_col = 'is_diff'
+            #compare new data to existing data
             diff_flag_df = lad.diff_rows(
                 df, existing_data_df, out_col=out_col,
                 exclude_col_patterns=['created']
             )
+            # only look at new data that is different from existing data
             diff_df = diff_flag_df[diff_flag_df[out_col]]
             if diff_df.empty:
                 return
@@ -155,8 +158,10 @@ def process_df(df, dest_table, update_if_diff, audit_table=None):
                 'etl_created_date','etl_created_by'
             ]
             audit_df = diff_df.copy()
+            # update new data with cols from old data we want to preserve
             diff_df.update(existing_data_df[cols_to_not_overwrite])
             ids_to_delete = [tuple(i) for i in diff_df.index]
+            # delete existing rows from table and insert updated versions
             db.delete_rows(
                 table=dest_table.split('.')[1],
                 schema=dest_table.split('.')[0], table_cols=['id'],
@@ -169,6 +174,7 @@ def process_df(df, dest_table, update_if_diff, audit_table=None):
                 schema=dest_table.split('.')[0], append=True
             )
             if audit_table:
+                #inser updated versions to audit table
                 audit_df.drop(out_col, axis=1, inplace=True)
                 audit_df.reset_index(inplace=True)
                 db.df_to_table(

@@ -14,6 +14,7 @@ def create_df_id(df, out_col):
     return df.apply(partial(create_row_id, out_col=out_col), axis=1)
 
 def diff_rows(df, compare_df, out_col, exclude_col_patterns=None):
+    # find rows that have different values for overlapping columns
     df[out_col] = None
 
     overlapping_cols = set(df.columns).intersection(set(compare_df.columns))
@@ -48,6 +49,7 @@ def diff_rows(df, compare_df, out_col, exclude_col_patterns=None):
         return row
 
     out = df.apply(_diff_row, axis=1)
+    # only return those that existed in the compare df
     out = out[out[out_col].notnull()]
 
     return out

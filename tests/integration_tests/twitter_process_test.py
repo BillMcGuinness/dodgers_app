@@ -194,7 +194,8 @@ class twitterProcessTest(unittest.TestCase):
         #all new and different rows should get inserted to audit table
         # id 'b' is exactly the same so shouldn't get inserted
         expected_audit_df = new_data.reset_index()
-        #expected_audit_df.drop()
+
+        # have to do a bunch of stuff to get the two dfs in the same order
         expected_audit_df = expected_audit_df[expected_audit_df['id']!='b']
         expected_audit_df = expected_audit_df.sort_values('id')
         expected_audit_df = expected_audit_df.reindex_axis(
@@ -204,7 +205,6 @@ class twitterProcessTest(unittest.TestCase):
         expected_audit_df = expected_audit_df.drop(
             'index', axis=1
         )
-
 
         resulting_audit_df = resulting_audit_df.sort_values('id')
         resulting_audit_df = resulting_audit_df.reindex_axis(
