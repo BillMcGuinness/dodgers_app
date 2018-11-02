@@ -3,7 +3,7 @@ import pandas as pd
 from lad.utils import df_utils
 
 
-class df_utils_test(unittest.TestCase):
+class dfUtilsTest(unittest.TestCase):
 
     def test_diff_rows_no_diff(self):
         inp_df = pd.DataFrame(data={
@@ -42,8 +42,8 @@ class df_utils_test(unittest.TestCase):
         pd.testing.assert_frame_equal(exp_df, got_df)
 
     def test_diff_rows_extra_idxs(self):
-        # inp df index 'g' doesn't exist in comp df, so is_diff col should
-        # remain None
+        # inp df index 'g' doesn't exist in comp df, so it shouldn't be in
+        # output df
         inp_df = pd.DataFrame(data={
             'idx': ['a','b','c','d','e','f','g'],
             'col1': [1,2,3,4,5,6, 7],
@@ -59,6 +59,7 @@ class df_utils_test(unittest.TestCase):
         exp_df = inp_df.assign(**{
             'is_diff': [False, False, False, False, False, True, None]
         })
+        exp_df = exp_df[~exp_df.index.isin(['g'])]
 
         got_df = df_utils.diff_rows(inp_df, inp_comp_df, out_col='is_diff')
         pd.testing.assert_frame_equal(exp_df, got_df)

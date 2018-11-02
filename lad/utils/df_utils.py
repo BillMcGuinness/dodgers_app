@@ -47,4 +47,7 @@ def diff_rows(df, compare_df, out_col, exclude_col_patterns=None):
 
         return row
 
-    return df.apply(_diff_row, axis=1)
+    out = df.apply(_diff_row, axis=1)
+    out = out[out[out_col].notnull()]
+
+    return out

@@ -2,7 +2,7 @@ import unittest
 import lad
 import pandas as pd
 
-class db_test(unittest.TestCase):
+class dbTest(unittest.TestCase):
 
     def _setup_table_with_data(self, table_nm, schema, create_table_col_map, df):
 

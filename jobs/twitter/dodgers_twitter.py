@@ -130,10 +130,17 @@ def process_df(df, dest_table, update_if_diff, audit_table=None):
         )
 
         new_rows_df = df[~df.index.isin(existing_data_df.index)]
+        new_rows_df.reset_index(inplace=True)
         db.df_to_table(
             new_rows_df, table=dest_table.split('.')[1],
             schema=dest_table.split('.')[0], append=True
         )
+        if audit_table:
+            #insert new rows to audit table
+            db.df_to_table(
+                new_rows_df, table=audit_table.split('.')[1],
+                schema=audit_table.split('.')[0], append=True
+            )
 
         if update_if_diff:
             out_col = 'is_diff'
@@ -141,27 +148,31 @@ def process_df(df, dest_table, update_if_diff, audit_table=None):
                 df, existing_data_df, out_col=out_col,
                 exclude_col_patterns=['created']
             )
-            diff_df = diff_flag_df[
-                (~diff_flag_df[out_col]) & (diff_flag_df[out_col].notnull())
-            ]
+            diff_df = diff_flag_df[diff_flag_df[out_col]]
+            if diff_df.empty:
+                return
             cols_to_not_overwrite = [
                 'etl_created_date','etl_created_by'
             ]
-            diff_df = diff_df.update(existing_data_df[cols_to_not_overwrite])
+            audit_df = diff_df.copy()
+            diff_df.update(existing_data_df[cols_to_not_overwrite])
             ids_to_delete = [tuple(i) for i in diff_df.index]
             db.delete_rows(
                 table=dest_table.split('.')[1],
                 schema=dest_table.split('.')[0], table_cols=['id'],
                 delete_conds=ids_to_delete
             )
-
+            diff_df.drop(out_col, axis=1, inplace=True)
+            diff_df.reset_index(inplace=True)
             db.df_to_table(
                 diff_df, table=dest_table.split('.')[1],
                 schema=dest_table.split('.')[0], append=True
             )
             if audit_table:
+                audit_df.drop(out_col, axis=1, inplace=True)
+                audit_df.reset_index(inplace=True)
                 db.df_to_table(
-                    diff_df, table=audit_table.split('.')[1],
+                    audit_df, table=audit_table.split('.')[1],
                     schema=audit_table.split('.')[0], append=True
                 )
 
