@@ -58,7 +58,7 @@ def process_df(df, dest_table, update_if_diff):
             ]
             #todo update diff_df with cols we don't want to overwrite
             ids_to_delete = [tuple(i) for i in diff_df.index]
-            db.delete(
+            db.delete_rows(
                 table=dest_table.split('.')[1],
                 schema=dest_table.split('.')[0], table_cols=['id'],
                 delete_conds=ids_to_delete

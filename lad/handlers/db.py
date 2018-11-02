@@ -108,7 +108,7 @@ class DbHandler(object):
 
         curs.close()
 
-    def delete(self, table, schema, table_cols=None, delete_conds=None):
+    def delete_rows(self, table, schema, table_cols=None, delete_conds=None):
         # table_cols are the table columns you want to use to determine which
         #  rows to delete--must be list of strings
         # delete_conds are the values you want to use to determine which rows
@@ -160,7 +160,19 @@ class DbHandler(object):
                 num_and_conds = len(or_delete_cond)
                 delete_sql_statement += '('
                 for and_idx, and_cond in enumerate(or_delete_cond):
-                    if isinstance(and_cond, str):
+                    if and_cond is None:
+                        delete_sql_statement += "{0} IS NULL".format(
+                            table_cols[and_idx]
+                        )
+                    elif isinstance(and_cond, bool):
+                        if and_cond:
+                            table_val = 1
+                        else:
+                            table_val = 0
+                        delete_sql_statement += "{0} = {1}".format(
+                            table_cols[and_idx], table_val
+                        )
+                    elif isinstance(and_cond, str):
                         delete_sql_statement += "{0} = '{1}'".format(
                             table_cols[and_idx], and_cond
                         )
@@ -180,3 +192,78 @@ class DbHandler(object):
         curs.commit()
         curs.close()
 
+    def delete_table(self, table, schema):
+        con = self.connect()
+
+        if self.driver == 'SQL Server':
+            # different ways of determining if a table already exists for
+            # different drivers
+            table_exists_df = self.sql_to_df(
+                query="""
+                            SELECT *
+                            FROM INFORMATION_SCHEMA.TABLES
+                            WHERE TABLE_SCHEMA = '{0}'
+                                AND TABLE_NAME = '{1}'
+                        """.format(schema, table)
+            )
+            if not table_exists_df.empty:
+                table_exists = True
+            else:
+                table_exists = False
+
+        if not table_exists:
+            # raising exception for this exercise
+            # if I were building this functionality out I would try to infer
+            # data types from the input df and create the table here
+            raise Exception('table {0}.{1} does not exist'.format(
+                schema, table
+            ))
+
+        delete_sql_statement = 'DROP TABLE {0}.{1}'.format(schema, table)
+
+        curs = con.cursor()
+        curs.execute(delete_sql_statement)
+        curs.commit()
+        curs.close()
+
+    def create_table(self, table, schema, col_type_map):
+        con = self.connect()
+
+        if self.driver == 'SQL Server':
+            # different ways of determining if a table already exists for
+            # different drivers
+            table_exists_df = self.sql_to_df(
+                query="""
+                    SELECT *
+                    FROM INFORMATION_SCHEMA.TABLES
+                    WHERE TABLE_SCHEMA = '{0}'
+                        AND TABLE_NAME = '{1}'
+                """.format(schema, table)
+            )
+            if not table_exists_df.empty:
+                table_exists = True
+            else:
+                table_exists = False
+
+        if table_exists:
+            #raising exception for this exercise
+            #if I were building this functionality out I would try to infer
+            # data types from the input df and create the table here
+            raise Exception('Table {0}.{1} already exists.  Please '
+                            'delete existing table first'.format(
+                schema, table
+            ))
+
+        create_sql_statement = 'CREATE TABLE {0}.{1} ('.format(schema, table)
+
+        for col, col_type in col_type_map.items():
+            create_sql_statement += '{0} {1},'.format(col, col_type)
+
+        #remove last comma and add close parenthesis
+        create_sql_statement = create_sql_statement[:-1]
+        create_sql_statement += ')'
+
+        curs = con.cursor()
+        curs.execute(create_sql_statement)
+        curs.commit()
+        curs.close()
