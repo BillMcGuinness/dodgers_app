@@ -27,13 +27,10 @@ class DbHandler(object):
     def connect(self):
         if self._conn is None:
             conn_str = 'DRIVER={%s};SERVER=%s' % (self.driver, self.server)
-            conn_msg = conn_str
             if self.database:
                 conn_str += ';DATABASE={}'.format(self.database)
-                conn_msg += ';DATABASE={}'.format(self.database)
             if self.user and self.password:
                 conn_str += ';UID={};PWD={}'.format(self.user, self.password)
-                conn_msg += ';UID={};PWD=****'.format(self.user)
             self._conn = pyodbc.connect(conn_str)
         return self._conn
 

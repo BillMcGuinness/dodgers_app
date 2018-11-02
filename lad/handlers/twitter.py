@@ -55,7 +55,7 @@ class TwitterHandler(object):
             include_entities=include_entities
         )
         search_df = get_search_df(search_res)
-        search_id = search_df['id'].iloc[0]
+        search_id = search_df.iloc[0:].index[0]
         out_df_map = {
             'search_df': search_df,
             'tweet_df': get_tweet_df(search_res, search_id),

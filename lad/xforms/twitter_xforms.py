@@ -16,15 +16,15 @@ def get_tweet_df(search_res, search_id):
             data={
                 'search_id': search_id,
                 'geo_lat': [
-                    tweet.get('geo').get('coordinates',[None])[0]
+                    tweet.get('coordinates').get('coordinates',[None])[1]
                     if tweet.get('geo') else None
                 ],
                 'geo_long': [
-                    tweet.get('geo').get('coordinates', [None, None])[1]
+                    tweet.get('coordinates').get('coordinates', [None, None])[0]
                     if tweet.get('geo') else None
                 ],
                 'geo_type': [
-                    tweet.get('geo').get('type') if tweet.get('geo') else None
+                    tweet.get('coordinates').get('type') if tweet.get('geo') else None
                 ],
                 'created_at': [tweet.get('created_at')],
                 'favorite_count': [tweet.get('favorite_count')],
@@ -62,6 +62,8 @@ def get_tweet_df(search_res, search_id):
 
     tweet_df.set_index('id', inplace=True)
 
+    tweet_df['created_at'] = pd.to_datetime(tweet_df['created_at'])
+
     return tweet_df
 
 def get_user_df(search_res):
@@ -94,7 +96,6 @@ def get_user_df(search_res):
             'profile_use_background_image': [
                 tweet.get('user').get('profile_use_background_image')
             ],
-            'id_str': [tweet.get('user').get('id_str')],
             'contributors_enabled': [tweet.get('user').get('contributors_enabled')],
             'profile_text_color': [tweet.get('user').get('profile_text_color')],
             'listed_count': [tweet.get('user').get('listed_count')],
@@ -132,9 +133,9 @@ def get_user_df(search_res):
 
         user_df = pd.concat([user_df, user_row], ignore_index=True)
 
-    user_df.drop_duplicates(subset='id', inplace=False)
-
-    user_df.set_index('id', inplace=True)
+    if not user_df.empty:
+        user_df.drop_duplicates(subset='id', inplace=False)
+        user_df.set_index('id', inplace=True)
 
     return user_df
 
@@ -179,9 +180,9 @@ def get_user_mentions_user_df(search_res):
                     [user_df, user_mention_user_row], ignore_index=True
                 )
 
-    user_df.drop_duplicates(subset='id', inplace=True)
-
-    user_df.set_index('id', inplace=True)
+    if not user_df.empty:
+        user_df.drop_duplicates(subset='id', inplace=True)
+        user_df.set_index('id', inplace=True)
 
     return user_df
 
@@ -272,9 +273,9 @@ def get_media_df(search_res):
                     [media_df, media_row], ignore_index=True
                 )
 
-    media_df.drop_duplicates(subset='id', inplace=True)
-
-    media_df.set_index('id', inplace=True)
+    if not media_df.empty:
+        media_df.drop_duplicates(subset='id', inplace=True)
+        media_df.set_index('id', inplace=True)
 
     return media_df
 
@@ -328,9 +329,9 @@ def get_places_df(search_res):
 
             place_df = pd.concat([place_df, place_row], ignore_index=True)
 
-    place_df.drop_duplicates(subset='id', inplace=True)
-
-    place_df.set_index('id', inplace=True)
+    if not place_df.empty:
+        place_df.drop_duplicates(subset='id', inplace=True)
+        place_df.set_index('id', inplace=True)
 
     return place_df
 
@@ -357,8 +358,8 @@ def get_places_coordinates_df(search_res):
     place_geo_df = create_df_id(
         place_geo_df, 'id'
     )
-    place_geo_df.drop_duplicates(subset='=id', inplace=True)
-
-    place_geo_df.set_index('id', inplace=True)
+    if not place_geo_df.empty:
+        place_geo_df.drop_duplicates(subset='id', inplace=True)
+        place_geo_df.set_index('id', inplace=True)
 
     return place_geo_df
