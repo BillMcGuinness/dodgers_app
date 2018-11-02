@@ -5,10 +5,6 @@ from lad.utils.df_utils import create_df_id
 def get_tweet_df(search_res, search_id):
     tweets = search_res['statuses']
 
-    if len(tweets) == 0:
-        #todo something with empty res
-        pass
-
     tweet_df = pd.DataFrame()
 
     for tweet in tweets:
@@ -51,7 +47,7 @@ def get_tweet_df(search_res, search_id):
                     if tweet.get('retweeted_status') else None
                 ],
                 'source': [tweet.get('source')],
-                'text': [tweet.get('text')],
+                'tweet_text': [tweet.get('text')],
                 'truncated': [tweet.get('truncated')],
                 'possibly_sensitive': [tweet.get('possibly_sensitive')],
                 'user_id': [tweet.get('user').get('id_str')]
@@ -143,16 +139,13 @@ def get_search_df(search_res):
     search_metadata = search_res.get('search_metadata')
 
     search_df = pd.DataFrame(data={
-        'create_date': [str(datetime.now())],
-        'modified_date': [str(datetime.now())],
+        'search_date': [str(datetime.now())],
         'completed_in': [search_metadata.get('completed_in')],
-        'count': [search_metadata.get('count')],
-        'max_id_str': [search_metadata.get('max_id_str')],
+        'res_count': [search_metadata.get('count')],
+        'max_id': [search_metadata.get('max_id_str')],
         'refresh_url': [search_metadata.get('refresh_url')],
-        'since_id_str': [search_metadata.get('since_id_str')],
-        'max_id': [search_metadata.get('max_id')],
         'query': [search_metadata.get('query')],
-        'since_id': [search_metadata.get('since_id')],
+        'since_id': [search_metadata.get('since_id_str')],
         'next_results': [search_metadata.get('next_results')]
     })
 
