@@ -83,7 +83,9 @@ def run_job():
     #to start, we don't want a max_id--give us the most recent
     max_id = None
     done = False
+    search_num = 1
     while not done:
+        print('Starting search number {}'.format(search_num))
         df_map = twitter.search_to_dfs(
             q=_SEARCH_STRING, since_id=since_id, max_id=max_id,
             result_type='recent'
@@ -133,12 +135,13 @@ def run_job():
         search_df = df_map['search_df']
         next_results = search_df['next_results'].iloc[0]
         if next_results:
-            # hard coding this...will break if next_results format changes
+            # hard coding this...will break if next_results format changes!!!
             next_results_substr_start = next_results.find('max_id=') + 7
             next_results_substr_end = next_results.find('&q=')
             max_id = next_results[
                 next_results_substr_start:next_results_substr_end
             ]
+            search_num += 1
         else:
             done = True
 
