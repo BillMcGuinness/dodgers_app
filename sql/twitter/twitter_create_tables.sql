@@ -3,11 +3,16 @@ CREATE TABLE dbo.searches (
 	search_date NVARCHAR(100) NOT NULL,
 	completed_in DECIMAL(5,3),
 	res_count INT,
-	max_id NVARCHAR(100) NOT NULL,
-	refresh_url NVARCHAR(200) NOT NULL,
-	since_id NVARCHAR(100) NOT NULL,
-	query NVARCHAR(100) NOT NULL,
-	next_results NVARCHAR(200) NOT NULL
+	max_id NVARCHAR(100),
+	refresh_url NVARCHAR(200),
+	since_id NVARCHAR(100),
+	query NVARCHAR(100),
+	next_results NVARCHAR(200),
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL,
 	PRIMARY KEY (id)
 );
 
@@ -16,98 +21,115 @@ CREATE TABLE dbo.searches_hist (
 	search_date NVARCHAR(100) NOT NULL,
 	completed_in DECIMAL(5,3),
 	res_count INT,
-	max_id NVARCHAR(100) NOT NULL,
-	refresh_url NVARCHAR(200) NOT NULL,
-	since_id NVARCHAR(100) NOT NULL,
-	query NVARCHAR(100) NOT NULL,
-	next_results NVARCHAR(200) NOT NULL
+	max_id NVARCHAR(100),
+	refresh_url NVARCHAR(200),
+	since_id NVARCHAR(100),
+	query NVARCHAR(100),
+	next_results NVARCHAR(200),
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL
 );
 
 CREATE TABLE dbo.users (
 	id NVARCHAR(100) NOT NULL,
-	time_zone NVARCHAR(100),
-	profile_image_url NVARCHAR(100),
-	translator_type NVARCHAR(100),
-	profile_image_url_https NVARCHAR(100),
-	profile_background_image_url NVARCHAR(100),
-	profile_sidebar_fill_color NVARCHAR(100),
+	time_zone NVARCHAR(200),
+	profile_image_url NVARCHAR(200),
+	translator_type NVARCHAR(200),
+	profile_image_url_https NVARCHAR(200),
+	profile_background_image_url NVARCHAR(200),
+	profile_sidebar_fill_color NVARCHAR(200),
 	description NVARCHAR(200),
 	default_profile BIT,
-	profile_background_image_url_https NVARCHAR(100),
+	profile_background_image_url_https NVARCHAR(200),
 	favourites_count INT,
-	name NVARCHAR(100),
+	name NVARCHAR(200),
 	profile_use_background_image BIT,
 	contributors_enabled BIT,
-	profile_text_color NVARCHAR(100),
+	profile_text_color NVARCHAR(200),
 	listed_count INT,
 	notifications BIT,
 	profile_background_tile BIT,
 	tweet_count INT,
 	verified BIT,
 	geo_enabled BIT,
-	screen_name NVARCHAR(100),
-	profile_sidebar_border_color NVARCHAR(100),
+	screen_name NVARCHAR(200),
+	profile_sidebar_border_color NVARCHAR(200),
 	default_profile_image BIT,
 	followers_count INT,
-	utc_offset NVARCHAR(100),
-	location NVARCHAR(100),
+	utc_offset NVARCHAR(200),
+	location NVARCHAR(200),
 	lang NVARCHAR(10),
-	profile_banner_url NVARCHAR(100),
+	profile_banner_url NVARCHAR(200),
 	protected BIT,
 	has_extended_profile BIT,
 	follow_request_sent BIT,
-	url NVARCHAR(100),
-	profile_background_color NVARCHAR(100),
+	url NVARCHAR(200),
+	profile_background_color NVARCHAR(200),
 	is_translator BIT,
 	following BIT,
 	friends_count INT,
-	profile_link_color NVARCHAR(100),
-	created_at NVARCHAR(100),
-	is_translation_enabled BIT
+	profile_link_color NVARCHAR(200),
+	created_at NVARCHAR(200),
+	is_translation_enabled BIT,
+	etl_created_date NVARCHAR(200) NOT NULL,
+	etl_created_by NVARCHAR(200) NOT NULL,
+	etl_modified_date NVARCHAR(200) NOT NULL,
+	etl_modified_by NVARCHAR(200) NOT NULL,
+	job_name NVARCHAR(200) NOT NULL,
+	update_with_older_data BIT,
 	PRIMARY KEY (id)
 );
 
 CREATE TABLE dbo.users_HIST (
 	id NVARCHAR(100) NOT NULL,
-	time_zone NVARCHAR(100),
-	profile_image_url NVARCHAR(100),
-	translator_type NVARCHAR(100),
-	profile_image_url_https NVARCHAR(100),
-	profile_background_image_url NVARCHAR(100),
-	profile_sidebar_fill_color NVARCHAR(100),
+	time_zone NVARCHAR(200),
+	profile_image_url NVARCHAR(200),
+	translator_type NVARCHAR(200),
+	profile_image_url_https NVARCHAR(200),
+	profile_background_image_url NVARCHAR(200),
+	profile_sidebar_fill_color NVARCHAR(200),
 	description NVARCHAR(200),
 	default_profile BIT,
-	profile_background_image_url_https NVARCHAR(100),
+	profile_background_image_url_https NVARCHAR(200),
 	favourites_count INT,
-	name NVARCHAR(100),
+	name NVARCHAR(200),
 	profile_use_background_image BIT,
 	contributors_enabled BIT,
-	profile_text_color NVARCHAR(100),
+	profile_text_color NVARCHAR(200),
 	listed_count INT,
 	notifications BIT,
 	profile_background_tile BIT,
 	tweet_count INT,
 	verified BIT,
 	geo_enabled BIT,
-	screen_name NVARCHAR(100),
-	profile_sidebar_border_color NVARCHAR(100),
+	screen_name NVARCHAR(200),
+	profile_sidebar_border_color NVARCHAR(200),
 	default_profile_image BIT,
 	followers_count INT,
-	utc_offset NVARCHAR(100),
-	location NVARCHAR(100),
+	utc_offset NVARCHAR(200),
+	location NVARCHAR(200),
 	lang NVARCHAR(10),
-	profile_banner_url NVARCHAR(100),
+	profile_banner_url NVARCHAR(200),
 	protected BIT,
 	has_extended_profile BIT,
 	follow_request_sent BIT,
-	url NVARCHAR(100),
-	profile_background_color NVARCHAR(100),
+	url NVARCHAR(200),
+	profile_background_color NVARCHAR(200),
 	is_translator BIT,
 	following BIT,
 	friends_count INT,
-	profile_link_color NVARCHAR(100),
-	created_at NVARCHAR(100),
-	is_translation_enabled BIT
+	profile_link_color NVARCHAR(200),
+	created_at NVARCHAR(200),
+	is_translation_enabled BIT,
+	etl_created_date NVARCHAR(200) NOT NULL,
+	etl_created_by NVARCHAR(200) NOT NULL,
+	etl_modified_date NVARCHAR(200) NOT NULL,
+	etl_modified_by NVARCHAR(200) NOT NULL,
+	update_with_older_data BIT,
+	job_name NVARCHAR(200) NOT NULL
 );
 
 CREATE TABLE dbo.places (
@@ -119,6 +141,11 @@ CREATE TABLE dbo.places (
 	place_type NVARCHAR(100),
 	url NVARCHAR(200),
 	bounding_box_type NVARCHAR(100),
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL,
 	PRIMARY KEY (id)
 );
 
@@ -130,7 +157,12 @@ CREATE TABLE dbo.places_HIST (
 	name NVARCHAR(100),
 	place_type NVARCHAR(100),
 	url NVARCHAR(200),
-	bounding_box_type NVARCHAR(100)
+	bounding_box_type NVARCHAR(100),
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL
 );
 
 CREATE TABLE dbo.places_coordinates (
@@ -138,6 +170,11 @@ CREATE TABLE dbo.places_coordinates (
 	place_id NVARCHAR(100),
 	place_coordinate_lat DECIMAL(15,10),
 	place_coordinate_long DECIMAL(15,10),
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (place_id) REFERENCES dbo.places(id)
 );
@@ -146,7 +183,12 @@ CREATE TABLE dbo.places_coordinates_HIST (
 	id NVARCHAR(100) NOT NULL,
 	place_id NVARCHAR(100),
 	place_coordinate_lat DECIMAL(15,10),
-	place_coordinate_long DECIMAL(15,10)
+	place_coordinate_long DECIMAL(15,10),
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL
 );
 
 CREATE TABLE dbo.tweets (
@@ -171,7 +213,12 @@ CREATE TABLE dbo.tweets (
     tweet_text NVARCHAR(200),
     truncated BIT,
     possibly_sensitive BIT,
-    user_id NVARCHAR(100)
+    user_id NVARCHAR(100),
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (search_id) REFERENCES dbo.searches(id),
 	FOREIGN KEY (place_id) REFERENCES dbo.places(id)
@@ -196,10 +243,15 @@ CREATE TABLE dbo.tweets_HIST (
     retweeted BIT,
     retweeted_tweet_id NVARCHAR(100),
     source NVARCHAR(100),
-    text NVARCHAR(200),
+    tweet_text NVARCHAR(200),
     truncated BIT,
     possibly_sensitive BIT,
-    user_id NVARCHAR(100)
+    user_id NVARCHAR(100),
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL
 );
 
 CREATE TABLE dbo.tweet_user_mention (
@@ -208,6 +260,11 @@ CREATE TABLE dbo.tweet_user_mention (
 	tweet_id NVARCHAR(100) NOT NULL,
 	start_index INT,
 	end_index INT,
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (user_id) REFERENCES dbo.users(id),
 	FOREIGN KEY (tweet_id) REFERENCES dbo.tweets(id)
@@ -218,7 +275,12 @@ CREATE TABLE dbo.tweet_user_mention_HIST (
 	user_id NVARCHAR(100) NOT NULL,
 	tweet_id NVARCHAR(100) NOT NULL,
 	start_index INT,
-	end_index INT
+	end_index INT,
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL
 );
 
 CREATE TABLE dbo.media (
@@ -243,6 +305,11 @@ CREATE TABLE dbo.media (
 	source_user_id NVARCHAR(100),
 	type NVARCHAR(100),
 	url NVARCHAR(200),
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL,
 	PRIMARY KEY (id)
 );
 
@@ -267,7 +334,12 @@ CREATE TABLE dbo.media_HIST (
 	source_status_id NVARCHAR(100),
 	source_user_id NVARCHAR(100),
 	type NVARCHAR(100),
-	url NVARCHAR(200)
+	url NVARCHAR(200),
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL
 );
 
 CREATE TABLE dbo.tweet_media (
@@ -276,6 +348,11 @@ CREATE TABLE dbo.tweet_media (
 	tweet_id NVARCHAR(100) NOT NULL,
 	start_index INT,
 	end_index INT,
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (media_id) REFERENCES dbo.media(id),
 	FOREIGN KEY (tweet_id) REFERENCES dbo.tweets(id)
@@ -286,5 +363,10 @@ CREATE TABLE dbo.tweet_media_HIST (
 	media_id NVARCHAR(100) NOT NULL,
 	tweet_id NVARCHAR(100) NOT NULL,
 	start_index INT,
-	end_index INT
+	end_index INT,
+	etl_created_date NVARCHAR(100) NOT NULL,
+	etl_created_by NVARCHAR(100) NOT NULL,
+	etl_modified_date NVARCHAR(100) NOT NULL,
+	etl_modified_by NVARCHAR(100) NOT NULL,
+	job_name NVARCHAR(100) NOT NULL
 );

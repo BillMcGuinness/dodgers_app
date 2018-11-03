@@ -264,3 +264,73 @@ class DbHandler(object):
         curs.execute(create_sql_statement)
         curs.commit()
         curs.close()
+
+    def update_table(self, table, schema, update_df, join_col):
+        con = self.connect()
+
+        if self.driver == 'SQL Server':
+            # different ways of determining if a table already exists for
+            # different drivers
+            table_exists_df = self.sql_to_df(
+                query="""
+                            SELECT *
+                            FROM INFORMATION_SCHEMA.TABLES
+                            WHERE TABLE_SCHEMA = '{0}'
+                                AND TABLE_NAME = '{1}'
+                        """.format(schema, table)
+            )
+            if not table_exists_df.empty:
+                table_exists = True
+            else:
+                table_exists = False
+
+        if not table_exists:
+            # raising exception for this exercise
+            # if I were building this functionality out I would try to infer
+            # data types from the input df and create the table here
+            raise Exception('table {0}.{1} does not exist'.format(
+                schema, table
+            ))
+
+        base_update_sql_statement = 'UPDATE {0}.{1} SET '.format(schema, table)
+        curs = con.cursor()
+        for idx, row in update_df.iterrows():
+            update_sql_statement = base_update_sql_statement
+            cols_to_update = row.index.tolist()
+            cols_to_update = [i for i in cols_to_update if i != join_col]
+            for col in cols_to_update:
+                if row[col] is None:
+                    update_sql_statement += '{0} = NULL,'.format(col, row[col])
+                elif isinstance(row[col], bool):
+                    if row[col]:
+                        table_val = 1
+                    else:
+                        table_val = 0
+                    update_sql_statement += '{0} = {1},'.format(col, table_val)
+                elif isinstance(row[col], str):
+                    update_val = row[col].replace("'","''")
+                    update_sql_statement += "{0} = '{1}',".format(col, update_val)
+                else:
+                    update_sql_statement += '{0} = {1},'.format(col, row[col])
+
+            # remove last comma
+            update_sql_statement = update_sql_statement[:-1]
+
+            if row[join_col] is None:
+                update_sql_statement += ' WHERE {0} = NULL'.format(join_col)
+            elif isinstance(row[join_col], bool):
+                if row[col]:
+                    table_val = 1
+                else:
+                    table_val = 0
+                    update_sql_statement += ' WHERE {0} = {1}'.format(join_col, table_val)
+            elif isinstance(row[join_col], str):
+                update_sql_statement += " WHERE {0} = '{1}'".format(join_col, row[join_col])
+            else:
+                update_sql_statement += ' WHERE {0} = {1}'.format(join_col, row[join_col])
+
+            print(update_sql_statement)
+            curs.execute(update_sql_statement)
+            curs.commit()
+
+        curs.close()

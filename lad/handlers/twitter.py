@@ -5,6 +5,7 @@ from lad.xforms.twitter_xforms import (
     get_tweet_user_mention_df, get_media_df, get_tweet_media_df, get_places_df,
     get_places_coordinates_df
 )
+from collections import OrderedDict
 
 class TwitterHandler(object):
 
@@ -56,16 +57,15 @@ class TwitterHandler(object):
         )
         search_df = get_search_df(search_res)
         search_id = search_df.iloc[0:].index[0]
-        out_df_map = {
-            'search_df': search_df,
-            'tweet_df': get_tweet_df(search_res, search_id),
-            'user_df': get_user_df(search_res),
-            'user_mention_df': get_user_mentions_user_df(search_res),
-            'tweet_user_mention_df': get_tweet_user_mention_df(search_res),
-            'media_df': get_media_df(search_res),
-            'tweet_media_df': get_tweet_media_df(search_res),
-            'places_df': get_places_df(search_res),
-            'places_coordinates_df': get_places_coordinates_df(search_res)
-        }
+        out_df_map = OrderedDict()
+        out_df_map['search_df'] = search_df
+        out_df_map['user_df'] = get_user_df(search_res)
+        out_df_map['user_mention_df'] = get_user_mentions_user_df(search_res)
+        out_df_map['media_df'] = get_media_df(search_res)
+        out_df_map['places_df'] = get_places_df(search_res)
+        out_df_map['tweet_df'] = get_tweet_df(search_res, search_id)
+        out_df_map['tweet_user_mention_df'] = get_tweet_user_mention_df(search_res)
+        out_df_map['places_coordinates_df'] = get_places_coordinates_df(search_res)
+        out_df_map['tweet_media_df'] = get_tweet_media_df(search_res)
 
         return out_df_map

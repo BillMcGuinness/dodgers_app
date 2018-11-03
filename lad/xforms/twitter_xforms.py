@@ -56,9 +56,9 @@ def get_tweet_df(search_res, search_id):
 
         tweet_df = pd.concat([tweet_df, tweet_row], ignore_index=True)
 
-    tweet_df.set_index('id', inplace=True)
-
-    tweet_df['created_at'] = pd.to_datetime(tweet_df['created_at'])
+    if not tweet_df.empty:
+        tweet_df.set_index('id', inplace=True)
+        tweet_df['created_at'] = pd.to_datetime(tweet_df['created_at']).astype(str)
 
     return tweet_df
 
@@ -124,14 +124,16 @@ def get_user_df(search_res):
             'friends_count': [tweet.get('user').get('friends_count')],
             'profile_link_color': [tweet.get('user').get('profile_link_color')],
             'created_at': [tweet.get('user').get('created_at')],
-            'is_translation_enabled': [tweet.get('user').get('is_translation_enabled')]
+            'is_translation_enabled': [tweet.get('user').get('is_translation_enabled')],
+            'update_with_older_data': [False]
         })
 
         user_df = pd.concat([user_df, user_row], ignore_index=True)
 
     if not user_df.empty:
-        user_df.drop_duplicates(subset='id', inplace=False)
+        user_df.drop_duplicates(subset='id', inplace=True)
         user_df.set_index('id', inplace=True)
+        user_df['created_at'] = pd.to_datetime(user_df['created_at']).astype(str)
 
     return user_df
 
@@ -168,6 +170,7 @@ def get_user_mentions_user_df(search_res):
                     'id': [user_mention.get('id_str')],
                     'screen_name': [user_mention.get('screen_name')],
                     'name': [user_mention.get('name')],
+                    'update_with_older_data': [True]
                 })
                 user_df = pd.concat(
                     [user_df, user_mention_user_row], ignore_index=True
@@ -202,7 +205,8 @@ def get_tweet_user_mention_df(search_res):
         tweet_user_mention_df, 'id'
     )
 
-    tweet_user_mention_df.set_index('id', inplace=True)
+    if not tweet_user_mention_df.empty:
+        tweet_user_mention_df.set_index('id', inplace=True)
 
     return tweet_user_mention_df
 
@@ -295,7 +299,8 @@ def get_tweet_media_df(search_res):
         tweet_media_df, 'id'
     )
 
-    tweet_media_df.set_index('id', inplace=True)
+    if not tweet_media_df.empty:
+        tweet_media_df.set_index('id', inplace=True)
 
     return tweet_media_df
 
