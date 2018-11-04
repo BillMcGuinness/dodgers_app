@@ -229,5 +229,46 @@ class dbTest(unittest.TestCase):
         self.assertEqual(0, row_count)
         self._teardown_table(test_table, test_schema)
 
+    def test_update(self):
+        test_table = 'zzz_test'
+        test_schema = 'dbo'
+        create_table_col_map = {
+            'a': 'NVARCHAR(100)',
+            'b': 'NVARCHAR(100)',
+            'c': 'BIT',
+            'd': 'INT'
+        }
+        df = pd.DataFrame(data={
+            'a': ['a', 'b', 'c', 'd'],
+            'b': ['w', 'x', 'y', 'z',],
+            'c': [True, True, False, False],
+            'd': [10, 11, 12, 13,]
+        })
+        self._setup_table_with_data(
+            test_table, test_schema, create_table_col_map, df
+        )
+
+        update_df = pd.DataFrame(data={
+            'a': ['a', 'b'],
+            'd': [999,999]
+        })
+        exp_df = df.assign(**{
+            'd': [999, 999, 12, 13, ]
+        })
+
+        with lad.DbHandler('LA_DB') as db:
+            db.update_table(test_table, test_schema, update_df, 'a')
+            got_df = db.sql_to_df(
+                query="""
+                    SELECT a, b, c, d
+                    FROM {0}.{1}
+                    ORDER BY a
+                """.format(test_schema, test_table)
+            )
+
+        pd.testing.assert_frame_equal(exp_df, got_df)
+
+        self._teardown_table(test_table, test_schema)
+
 if __name__ == '__main__':
     unittest.main()
