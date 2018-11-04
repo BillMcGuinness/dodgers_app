@@ -329,7 +329,7 @@ class DbHandler(object):
             else:
                 update_sql_statement += ' WHERE {0} = {1}'.format(join_col, row[join_col])
 
-            print(update_sql_statement)
+            #print(update_sql_statement)
             curs.execute(update_sql_statement)
             curs.commit()
 

@@ -221,7 +221,8 @@ CREATE TABLE dbo.tweets (
 	job_name NVARCHAR(100) NOT NULL,
 	PRIMARY KEY (id),
 	FOREIGN KEY (search_id) REFERENCES dbo.searches(id),
-	FOREIGN KEY (place_id) REFERENCES dbo.places(id)
+	FOREIGN KEY (place_id) REFERENCES dbo.places(id),
+	FOREIGN KEY (user_id) REFERENCES dbo.users(id)
 );
 
 CREATE TABLE dbo.tweets_HIST (
